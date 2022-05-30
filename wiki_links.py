@@ -39,13 +39,15 @@ for file in os.listdir(os.fsencode(os.path.join(repo, "items"))):
             if name_list[i] == " ":
                 name_list[i] = "_"
                 name_list[i + 1] = name_list[i + 1].upper()
-        name = "".join(name_list)              
+        name = "".join(name_list)
 
         skipped = False
+        changed = True
         if check_fandom:
             url = "https://hypixel-skyblock.fandom.com/wiki/" + name
             if "info" in json_data and url in json_data["info"]:
                 print(f"{name}: Fandom: Skipped")
+                skipped = True
             else:
                 r = http.request("GET", url)
                 if r.status == 200:
@@ -65,6 +67,7 @@ for file in os.listdir(os.fsencode(os.path.join(repo, "items"))):
             url = "https://wiki.hypixel.net/" + name
             if "info" in json_data and url in json_data["info"]:
                 print(f"{name}: Hypixel: Skipped")
+                skipped = True
             else:
                 r = http.request("GET", url)
                 if r.status == 200:
@@ -80,11 +83,15 @@ for file in os.listdir(os.fsencode(os.path.join(repo, "items"))):
                 else:
                     print(f"{name}: Hypixel: ✕")
 
-        file.seek(0)
-        file.truncate()
-        file.write(
-            json.dumps(json_data, indent=2, ensure_ascii=False).replace("=", "\\u003d")
-            + "\n"
-        )
+        if changed:
+            file.seek(0)
+            file.truncate()
+            file.write(
+                json.dumps(json_data, indent=2, ensure_ascii=False).replace(
+                    "=", "\\u003d"
+                )
+                + "\n"
+            )
         file.close()
-        sleep(1)
+        if not skipped:
+            sleep(1)
