@@ -59,9 +59,9 @@ for file in os.listdir(os.fsencode(os.path.join(repo, "items"))):
 
                     json_data["info"].append(url)
                     changed = True
-                    print(f"{name}: Fandom: ✓")
+                    print(f"{name}: Fandom: added")
                 else:
-                    print(f"{name}: Fandom: ✕")
+                    print(f"{name}: Fandom: not found")
 
         if check_official_wiki:
             url = "https://wiki.hypixel.net/" + name
@@ -79,9 +79,9 @@ for file in os.listdir(os.fsencode(os.path.join(repo, "items"))):
 
                     json_data["info"].append(url)
                     changed = True
-                    print(f"{name}: Hypixel: ✓")
+                    print(f"{name}: Hypixel: added")
                 else:
-                    print(f"{name}: Hypixel: ✕")
+                    print(f"{name}: Hypixel: not found")
 
         if changed:
             file.seek(0)
