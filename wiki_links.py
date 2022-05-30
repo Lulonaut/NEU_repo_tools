@@ -21,7 +21,12 @@ http = urllib3.PoolManager()
 
 for file in os.listdir(os.fsencode(os.path.join(repo, "items"))):
     with open(os.path.join(repo, "items", os.fsdecode(file)), "r+") as file:
-        json_data = json.load(file)
+        json_data = json.loads(file.read().encode("utf-8"))
+
+        if "vanilla" in json_data or json_data["itemid"] == "minecraft:enchanted_book" or json_data["itemid"] == "minecraft:potion":
+            file.close()
+            continue
+
 
         name = ""
         whatever = False
@@ -40,15 +45,18 @@ for file in os.listdir(os.fsencode(os.path.join(repo, "items"))):
                 name_list[i] = "_"
                 name_list[i + 1] = name_list[i + 1].upper()
         name = "".join(name_list)
+        name = name.replace("'", "%27")
 
         skipped = False
-        changed = True
+        changed = False
         if check_fandom:
             url = "https://hypixel-skyblock.fandom.com/wiki/" + name
-            if "info" in json_data and url in json_data["info"]:
-                print(f"{name}: Fandom: Skipped")
-                skipped = True
-            else:
+            if "info" in json_data:
+                for item in json_data["info"]:
+                    if "hypixel-skyblock.fandom.com" in item:
+                        print(f"{name}: Fandom: Skipped")
+                        skipped = True
+            if not skipped:
                 r = http.request("GET", url)
                 if r.status == 200:
                     if not "infoType" in json_data:
@@ -65,10 +73,12 @@ for file in os.listdir(os.fsencode(os.path.join(repo, "items"))):
 
         if check_official_wiki:
             url = "https://wiki.hypixel.net/" + name
-            if "info" in json_data and url in json_data["info"]:
-                print(f"{name}: Hypixel: Skipped")
-                skipped = True
-            else:
+            if "info" in json_data:
+                for item in json_data["info"]:
+                    if "wiki.hypixel.net" in item:
+                        print(f"{name}: Hypixel: Skipped")
+                        skipped = True
+            if not skipped:
                 r = http.request("GET", url)
                 if r.status == 200:
                     if not "infoType" in json_data:
@@ -89,8 +99,7 @@ for file in os.listdir(os.fsencode(os.path.join(repo, "items"))):
             file.write(
                 json.dumps(json_data, indent=2, ensure_ascii=False).replace(
                     "=", "\\u003d"
-                )
-                + "\n"
+                ).replace("'", "\\u0027")
             )
         file.close()
         if not skipped:
