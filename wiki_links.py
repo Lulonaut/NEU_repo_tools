@@ -39,6 +39,7 @@ for file in os.listdir(os.fsencode(os.path.join(repo, "items"))):
         if "[Lvl {LVL}] " in name:
             name = name.replace("[Lvl {LVL}] ", "") + " Pet"
 
+        name = name.strip()
         name_list = list(name)
         for i in range(0, len(name_list)):
             if name_list[i] == " ":
@@ -59,7 +60,7 @@ for file in os.listdir(os.fsencode(os.path.join(repo, "items"))):
             if not skipped:
                 r = http.request("GET", url)
                 if r.status == 200:
-                    if not "infoType" in json_data:
+                    if not "infoType" in json_data or json_data["infoType"] == "":
                         json_data["infoType"] = "WIKI_URL"
 
                     if not "info" in json_data:
@@ -81,7 +82,7 @@ for file in os.listdir(os.fsencode(os.path.join(repo, "items"))):
             if not skipped:
                 r = http.request("GET", url)
                 if r.status == 200:
-                    if not "infoType" in json_data:
+                    if not "infoType" in json_data or json_data["infoType"] == "":
                         json_data["infoType"] = "WIKI_URL"
 
                     if not "info" in json_data:
