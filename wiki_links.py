@@ -18,15 +18,23 @@ if not check_fandom and not check_official_wiki:
     exit(0)
 
 http = urllib3.PoolManager()
+not_found_hypixel = []
+not_found_fandom = []
 
 for file in os.listdir(os.fsencode(os.path.join(repo, "items"))):
-    with open(os.path.join(repo, "items", os.fsdecode(file)), "r+") as file:
-        json_data = json.loads(file.read().encode("utf-8"))
+    with open(
+        os.path.join(repo, "items", os.fsdecode(file)), "r+", encoding="utf-8"
+    ) as file:
+        # json_data = json.loads(file.read().encode('cp1252').decode('utf8'))
+        json_data = json.loads(file.read())
 
-        if "vanilla" in json_data or json_data["itemid"] == "minecraft:enchanted_book" or json_data["itemid"] == "minecraft:potion":
+        if (
+            "vanilla" in json_data
+            or json_data["itemid"] == "minecraft:enchanted_book"
+            or json_data["itemid"] == "minecraft:potion"
+        ):
             file.close()
             continue
-
 
         name = ""
         whatever = False
@@ -70,6 +78,9 @@ for file in os.listdir(os.fsencode(os.path.join(repo, "items"))):
                     changed = True
                     print(f"{name}: Fandom: added")
                 else:
+                    not_found_fandom.append(file.name)
+                    if len(not_found_fandom) == 3:
+                        break
                     print(f"{name}: Fandom: not found")
 
         if check_official_wiki:
@@ -92,16 +103,33 @@ for file in os.listdir(os.fsencode(os.path.join(repo, "items"))):
                     changed = True
                     print(f"{name}: Hypixel: added")
                 else:
+                    not_found_hypixel.append(file.name)
                     print(f"{name}: Hypixel: not found")
 
         if changed:
             file.seek(0)
             file.truncate()
             file.write(
-                json.dumps(json_data, indent=2, ensure_ascii=False).replace(
-                    "=", "\\u003d"
-                ).replace("'", "\\u0027")
+                json.dumps(json_data, indent=2, ensure_ascii=False)
+                .replace("=", "\\u003d")
+                .replace("'", "\\u0027")
             )
         file.close()
         if not skipped:
             sleep(1)
+
+if len(not_found_fandom) != 0:
+    with open("not_found_fandom.txt", "w") as file:
+        final_string = ""
+        for item in not_found_fandom:
+            final_string += item + "\n"
+        file.write(final_string)
+        file.close()
+
+if len(not_found_hypixel) != 0:
+    with open("not_found_hypixel.txt", "w") as file:
+        final_string = ""
+        for item in not_found_hypixel:
+            final_string += item + "\n"
+        file.write(final_string)  
+        file.close() 
