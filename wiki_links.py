@@ -79,8 +79,6 @@ for file in os.listdir(os.fsencode(os.path.join(repo, "items"))):
                     print(f"{name}: Fandom: added")
                 else:
                     not_found_fandom.append(file.name)
-                    if len(not_found_fandom) == 3:
-                        break
                     print(f"{name}: Fandom: not found")
 
         if check_official_wiki:
