@@ -25,7 +25,9 @@ for file in os.listdir(os.fsencode(os.path.join(repo, "items"))):
     with open(
         os.path.join(repo, "items", os.fsdecode(file)), "r+", encoding="utf-8"
     ) as file:
-        # json_data = json.loads(file.read().encode('cp1252').decode('utf8'))
+        if "_RUNE" in file.name:
+            print(f"{file.name}: Skipped (rune)")
+            continue
         json_data = json.loads(file.read())
 
         if (
@@ -129,5 +131,5 @@ if len(not_found_hypixel) != 0:
         final_string = ""
         for item in not_found_hypixel:
             final_string += item + "\n"
-        file.write(final_string)  
-        file.close() 
+        file.write(final_string)
+        file.close()
