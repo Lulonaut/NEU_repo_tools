@@ -15,8 +15,6 @@ with open("NotEnoughUpdates-REPO/constants/essencecosts.json", "r+") as file:
                 essencecosts[item["id"]]["catacombs_requirements"] = item[
                     "catacombs_requirements"
                 ]
-            if "requirements" in item:
-                    essencecosts[item["id"]]["requirements"] = item["requirements"]    
 
     file.seek(0)
     file.truncate()
